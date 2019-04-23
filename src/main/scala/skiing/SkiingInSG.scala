@@ -46,6 +46,8 @@ object SkiingInSG {
 
   def redmartCondition(from: Int, e: Coord): Boolean = e._1 >= 0 && e._2 >= 0 && e._1 < X && e._2 < Y && from > elem(e)
 
+  def cioCondition(from: Int, e: Coord): Boolean = ???
+
   def paths(from: Coord): List[Path] = {
     def pathsRec(current: Coord, currentPath: Path): List[Path] = {
       val vn = validNeighbours(current)
@@ -72,7 +74,6 @@ object SkiingInSG {
     best
   }
 
-  // List((693,603), (694,603), (694,604), (695,604), (695,605), (694,605), (694,606), (693,606), (692,606), (692,605), (691,605), (691,606), (690,606), (689,606), (689,607))
   def main(args: Array[String]): Unit = {
     val t0 = java.lang.System.currentTimeMillis
     println("Solving skiing in Singapore ...")
