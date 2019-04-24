@@ -1,7 +1,16 @@
 package skiing
 
-// http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/
-// By TJ
+/**
+  * Skiing: a coding diversion
+  *
+  * http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/
+  *
+  * REDMART Solution
+  *
+  * CIO Solution
+  *
+  * @author TJ
+  */
 object SkiingInSG {
   val datum = "./src/main/scala/mountain1000x1000.txt"
   val linesIterator = scala.io.Source.fromFile(datum).getLines
