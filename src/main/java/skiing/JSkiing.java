@@ -4,20 +4,21 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JSkiing {
-    private Stack<Coordinate> bestPath = null;
+    private List<Coordinate> bestPath = null;
 
     public void visit(final int[][] mountain) {
         final int w = mountain.length;
         final int h = mountain[0].length;
 
-        Coordinate from = new Coordinate(0, 1);
-        visit(from, mountain, new Stack<>(), new HashSet<>());
-        System.out.println(from + " " + bestPath);
-
-//        bestPath = null;
-//        from = new Coordinate(0, 3);
-//        visit(from, mountain, new Stack<>(), new HashSet<>());
-//        System.out.println("0, 3: " + bestPath);
+        for(int i = 0 ; i < w; i++) {
+            for(int j = 0; j < h; j++) {
+                final Coordinate from = new Coordinate(i, j);
+                visit(from, mountain, new Stack<>(), new HashSet<>());
+            }
+        }
+        System.out.println("Best path: " + bestPath);
+        System.out.println(" Size: " + bestPath.size()); // 15
+        System.out.println(" Drop: " + drop(bestPath)); // 1422
     }
 
     private void visit(final Coordinate from,
@@ -30,7 +31,6 @@ public class JSkiing {
         List<Coordinate> children = children(from, mountain);
 
         if (children.isEmpty()) {
-            System.out.println("Path " + processPath(path, mountain));
             isBestPath(processPath(path, mountain));
         } else {
             for(Coordinate child : children) {
@@ -44,12 +44,24 @@ public class JSkiing {
         visited.remove(from);
     } // visit
 
-    private void isBestPath(final Stack<Coordinate> path) {
-        //System.out.println("> isBestPath: " + path);
-        if (bestPath == null || path.size() > bestPath.size()) {
-            bestPath = path;
+    private void isBestPath(final List<Coordinate> path) {
+        if (bestPath == null) {
+            bestPath = new LinkedList<>(path);
+        } else if (path.size() > bestPath.size()) {
+            bestPath = new LinkedList<>(path);
+        } else if (path.size() == bestPath.size() && drop(path) > drop(bestPath)) {
+            bestPath = new LinkedList<>(path);
         }
-        System.out.println("< isBestPath: " + bestPath);
+    }
+
+    private int drop(final List<Coordinate> path) {
+        if (path.isEmpty())
+            return -1;
+        else {
+            final int top = path.get(0).value;
+            final int bottom = path.get(path.size() - 1).value;
+            return top - bottom;
+        }
     }
 
     private Stack<Coordinate> processPath(final Stack<Coordinate> path, final int[][] mountain) {
@@ -79,8 +91,11 @@ public class JSkiing {
         long t0 = System.currentTimeMillis();
         final int[][] mountain = MapLoader.loadMap();
         long tf = System.currentTimeMillis() - t0;
-        System.out.println("Loaded map in " + tf + " millis");
+        System.out.println("Loaded map in " + tf + " millis"); // 300 ms
 
+        t0 = System.currentTimeMillis();
         jSkiing.visit(mountain);
+        tf = System.currentTimeMillis() - t0;
+        System.out.println("Solved in " + tf+ " millis"); // 2.5 secs
     }
 }
