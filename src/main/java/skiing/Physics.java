@@ -5,7 +5,7 @@ import static java.lang.Math.*;
 public class Physics {
     public static final double G = 9.81;
     public static final double DEFAULT_LENGTH = 1.0;
-    public static final double SKF = 0.3; // Snow kinetic friction
+    public static final double SKF = 0.4; // Snow kinetic friction
 
     // Returns the angle of the slope in radians
     public static double slopeAngle(final double height, final double length) {
