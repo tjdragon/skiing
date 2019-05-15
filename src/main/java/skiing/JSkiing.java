@@ -28,7 +28,7 @@ public class JSkiing {
         path.push(from);
         visited.add(from);
 
-        List<Coordinate> children = children(from, mountain);
+        final List<Coordinate> children = children(from, mountain);
 
         if (children.isEmpty()) {
             isBestPath(processPath(path, mountain));
