@@ -8,11 +8,19 @@ import java.util.stream.Collectors;
  *
  * http://geeks.redmart.com/2015/01/07/skiing-in-singapore-a-coding-diversion/
  *
- * REDMART Solution
+ * CIO Solution (https://github.com/mgorriz) with Real World Physics
+ *
+ * - The data map remains the same, a 1000x1000 grid of heights in meters
+ * - We will consider that each "square" is a 5x5, therefore the distanceTravelled between two peaks is 10 meters
+ * - You can only move down if the angle of the slope is greater than the minimum angle from using the kinetic
+ *   friction coeffecient
+ *  - The final speed is the initial speed for the next square
+ *  - You loose 20% of the initial speed on a turn
  *
  * @author TJ
+ * @see Physics
  */
-public class JSkiing {
+public class RSkiing {
     private List<Coordinate> bestPath = null;
 
     public void visit(final int[][] mountain) {
@@ -95,7 +103,7 @@ public class JSkiing {
     }
 
     public static void main(String[] args) throws Exception {
-        final JSkiing jSkiing = new JSkiing();
+        final RSkiing jSkiing = new RSkiing();
 
         long t0 = System.currentTimeMillis();
         final int[][] mountain = MapLoader.loadMap();

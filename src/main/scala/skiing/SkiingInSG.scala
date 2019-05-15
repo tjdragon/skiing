@@ -7,8 +7,6 @@ package skiing
   *
   * REDMART Solution
   *
-  * CIO Solution
-  *
   * @author TJ
   */
 object SkiingInSG {
