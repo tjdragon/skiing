@@ -5,7 +5,7 @@ import static java.lang.Math.*;
 public class Physics {
     public static final double G = 9.81;
     public static final double DEFAULT_LENGTH = 10.0;
-    public static final double SKF = 0.05; // Snow kinetic friction
+    public static final double SKF = 0.3; // Snow kinetic friction
 
     // Returns the angle of the slope in radians
     public static double slopeAngle(final double height, final double length) {
@@ -135,9 +135,36 @@ public class Physics {
         log("stoppingDistance  : " + stoppingDistance);
     }
 
+    // Simple test case going up
+    private static void testCase4() {
+        log("* TEST CASE 4 *");
+
+        double kineticFriction = 0.0;
+        double height = 1;
+        double length = 1;
+        double minSlope = minSlopeAngle(kineticFriction);
+        double slopeAngle = slopeAngle(height, length);
+        double slopeLength = slopeLength(height, length);
+        double acceleration = acceleration(slopeAngle, kineticFriction, Orientation.UP);
+        double initialSpeed = 4.0;
+        double finalSpeed = finalSpeed(initialSpeed, acceleration, slopeLength);
+        double distance = distanceTravelled(initialSpeed, finalSpeed, acceleration);
+
+        log("height           : " + height);
+        log("length           : " + length);
+        log("min slope        : " + toDegrees(minSlope));
+        log("slope angle      : " + toDegrees(slopeAngle));
+        log("slope length     : " + slopeLength);
+        log("acceleration down: " + acceleration);
+        log("initial speed    : " + initialSpeed);
+        log("final speed      : " + finalSpeed);
+        log("distance         : " + distance);
+    }
+
     public static void main(String[] args) {
         testCase1();
         testCase2();
         testCase3();
+        testCase4();
     }
 }

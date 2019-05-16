@@ -5,6 +5,7 @@ import java.util.Objects;
 public class Coordinate {
     public final int x, y;
     public int value = -1;
+    public double speed = 0.0;
 
     public Coordinate(int x, int y) {
         this.x = x;
@@ -30,6 +31,7 @@ public class Coordinate {
                 "x=" + x +
                 ", y=" + y +
                 ", value=" + value +
+                ", speed=" + speed +
                 '}';
     }
 }

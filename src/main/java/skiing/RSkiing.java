@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * CIO Solution (https://github.com/mgorriz) with Real World Physics
  *
  * - The data map remains the same, a 1000x1000 grid of heights in meters
- * - We will consider that each "square" is a 5x5, therefore the distanceTravelled between two peaks is 10 meters
+ * - We will consider that each "square" is a 5x5, therefore the distance travelled between two peaks is 10 meters
  * - You can only move down if the angle of the slope is greater than the minimum angle from using the kinetic
  *   friction coeffecient
  *  - The final speed is the initial speed for the next square
@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
  * @see Physics
  */
 public class RSkiing {
+    // Min slope angle to go down considering the static kinetic friction factor
+    private final double minSlopeAngle = Physics.minSlopeAngle(Physics.SKF);
     private List<Coordinate> bestPath = null;
 
     public void visit(final int[][] mountain) {
@@ -29,8 +31,11 @@ public class RSkiing {
 
         for(int i = 0 ; i < w; i++) {
             for(int j = 0; j < h; j++) {
+                final long t0 = System.currentTimeMillis();
                 final Coordinate from = new Coordinate(i, j);
                 visit(from, mountain, new Stack<>(), new HashSet<>());
+                final long tf = (System.currentTimeMillis() - t0);
+                System.out.println("Visited " + i + " / " + j + " in " + tf + " millis");
             }
         }
         System.out.println("Best path: " + bestPath);
@@ -86,20 +91,54 @@ public class RSkiing {
         return path;
     }
 
+    // v1: don't consider straight lines or turns for 20% redux - to do later
     private List<Coordinate> children(final Coordinate from, final int[][] mountain) {
-        final List<Coordinate> ns = new LinkedList<>();
-        final int fromVal = mountain[from.x][from.y];
+        // Let's get coordinates within the mountain
+        final List<Coordinate> validCoordinates = validCoordinates(from, mountain);
+        final List<Coordinate> validChildren = new LinkedList<>();
+        from.value = mountain[from.x][from.y];
+
+        for(Coordinate to : validCoordinates) {
+            to.value = mountain[to.x][to.y];
+            final double slopeAngle = Math.abs(Physics.slopeAngle(from.value - to.value));
+            final double slopeLength = Physics.slopeLength(from.value - to.value, Physics.DEFAULT_LENGTH);
+//            System.out.println(to + " angle: " + slopeAngle + ", length: " + slopeLength);
+            if (to.value <= from.value) {
+                // Going downhill
+                if (slopeAngle >= minSlopeAngle) {
+                    final double acceleration = Physics.acceleration(slopeAngle, Physics.SKF, Orientation.DOWN);
+                    final double finalSpeed = Physics.finalSpeed(from.speed, acceleration, slopeLength);
+                    to.speed = finalSpeed;
+                    validChildren.add(to);
+                }
+            } else {
+                // Going uphill
+                final double acceleration = Physics.acceleration(slopeAngle, Physics.SKF, Orientation.UP);
+                final double finalSpeed = Physics.finalSpeed(from.speed, acceleration, slopeLength);
+                if (!Double.isNaN(finalSpeed)) {
+                    to.speed = finalSpeed;
+                    validChildren.add(to);
+//                    System.out.println("UP: " + to + " angle: " + slopeAngle + ", length: " + slopeLength);
+                }
+            }
+        }
+
+        return validChildren;
+    }
+
+    private List<Coordinate> validCoordinates(final Coordinate from, final int[][] mountain) {
+        final List<Coordinate> coords = new LinkedList<>();
         final int s = mountain.length;
 
-        ns.add(new Coordinate(from.x + 1, from.y));
-        ns.add(new Coordinate(from.x - 1, from.y));
-        ns.add(new Coordinate(from.x, from.y + 1));
-        ns.add(new Coordinate(from.x, from.y - 1 ));
+        coords.add(new Coordinate(from.x + 1, from.y));
+        coords.add(new Coordinate(from.x - 1, from.y));
+        coords.add(new Coordinate(from.x, from.y + 1));
+        coords.add(new Coordinate(from.x, from.y - 1 ));
 
-        final List<Coordinate> nc = ns.stream()
-                                      .filter(e -> e.x >= 0 && e.y >= 0 && e.x < s && e.y < s && mountain[e.x][e.y] < fromVal)
-                                      .collect(Collectors.toList());
-        return nc;
+        final List<Coordinate> validCoords = coords.stream()
+                                                   .filter(e -> e.x >= 0 && e.y >= 0 && e.x < s && e.y < s)
+                                                   .collect(Collectors.toList());
+        return validCoords;
     }
 
     public static void main(String[] args) throws Exception {
